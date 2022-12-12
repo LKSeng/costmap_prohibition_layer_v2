@@ -123,9 +123,9 @@ void CostmapProhibitionLayer::updateCosts(costmap_2d::Costmap2D &master_grid, in
     return;
 
   // check if origin or resolution of master grid has changed. if it has, costly computation is required
-  bool recompute_prohibited_cells = (_current_origin_x == master_grid.getOriginX() and
-                                     _current_origin_y == master_grid.getOriginY() and
-                                     _current_map_resolution == master_grid.getResolution() and
+  bool recompute_prohibited_cells = (_current_origin_x != master_grid.getOriginX() or
+                                     _current_origin_y != master_grid.getOriginY() or
+                                     _current_map_resolution != master_grid.getResolution() or
                                      _force_recompute);
 
   std::lock_guard<std::mutex> l(_data_mutex);
