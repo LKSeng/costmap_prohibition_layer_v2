@@ -36,14 +36,14 @@
  * Author: Stephan Kurzawe
  *********************************************************************/
 
-#include <costmap_prohibition_layer/costmap_prohibition_layer.h>
+#include <costmap_prohibition_layer_v2/costmap_prohibition_layer.h>
 #include <pluginlib/class_list_macros.h>
 
-PLUGINLIB_EXPORT_CLASS(costmap_prohibition_layer_namespace::CostmapProhibitionLayer, costmap_2d::Layer)
+PLUGINLIB_EXPORT_CLASS(costmap_prohibition_layer_v2::CostmapProhibitionLayer, costmap_2d::Layer)
 
 using costmap_2d::LETHAL_OBSTACLE;
 
-namespace costmap_prohibition_layer_namespace
+namespace costmap_prohibition_layer_v2
 {
     
 CostmapProhibitionLayer::CostmapProhibitionLayer() : _dsrv(NULL)

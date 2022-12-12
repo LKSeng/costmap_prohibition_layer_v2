@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(costmap_prohibition_layer)
+project(costmap_prohibition_layer_v2)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -112,7 +112,7 @@ generate_dynamic_reconfigure_options(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES costmap_prohibition_layer
+  LIBRARIES costmap_prohibition_layer_v2
   CATKIN_DEPENDS costmap_2d dynamic_reconfigure
   DEPENDS
 )
@@ -128,11 +128,11 @@ include_directories(${catkin_INCLUDE_DIRS} include)
 
 ## Declare a C++ library
 
-add_library(costmap_prohibition_layer src/costmap_prohibition_layer.cpp)
-target_link_libraries(costmap_prohibition_layer ${catkin_LIBRARIES})
+add_library(costmap_prohibition_layer_v2 src/costmap_prohibition_layer.cpp)
+target_link_libraries(costmap_prohibition_layer_v2 ${catkin_LIBRARIES})
 
 # Dynamic reconfigure: make sure configure headers are built before any node using them
-add_dependencies(costmap_prohibition_layer ${PROJECT_NAME}_gencfg)
+add_dependencies(costmap_prohibition_layer_v2 ${PROJECT_NAME}_gencfg)
 
 ############
 ## Install ##
@@ -150,7 +150,7 @@ add_dependencies(costmap_prohibition_layer ${PROJECT_NAME}_gencfg)
 
 
 ## Mark executables and/or libraries for installation
-install(TARGETS costmap_prohibition_layer
+install(TARGETS costmap_prohibition_layer_v2
    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 )
 

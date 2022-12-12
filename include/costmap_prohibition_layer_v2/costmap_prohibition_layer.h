@@ -47,12 +47,12 @@
 #include <ros/ros.h>
 #include <costmap_2d/layer.h>
 #include <costmap_2d/layered_costmap.h>
-#include <costmap_prohibition_layer/CostmapProhibitionLayerConfig.h>
+#include <costmap_prohibition_layer_v2/CostmapProhibitionLayerConfig.h>
 #include <dynamic_reconfigure/server.h>
 
 #include <unordered_map>
 
-namespace costmap_prohibition_layer_namespace
+namespace costmap_prohibition_layer_v2
 {
     
 // point with integer coordinates  
