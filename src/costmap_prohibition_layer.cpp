@@ -94,6 +94,7 @@ void CostmapProhibitionLayer::onInitialize()
 void CostmapProhibitionLayer::reconfigureCB(CostmapProhibitionLayerConfig &config, uint32_t level)
 {
   enabled_ = config.enabled;
+  if (_fill_polygons != config.fill_polygons) _force_recompute = true;
   _fill_polygons = config.fill_polygons;
 }
 
@@ -124,13 +125,15 @@ void CostmapProhibitionLayer::updateCosts(costmap_2d::Costmap2D &master_grid, in
   // check if origin or resolution of master grid has changed. if it has, costly computation is required
   bool recompute_prohibited_cells = (_current_origin_x == master_grid.getOriginX() and
                                      _current_origin_y == master_grid.getOriginY() and
-                                     _current_map_resolution == master_grid.getResolution());
+                                     _current_map_resolution == master_grid.getResolution() and
+                                     _force_recompute);
 
   std::lock_guard<std::mutex> l(_data_mutex);
 
   if (recompute_prohibited_cells)
   {
     updateProhibitionCells(&master_grid, _prohibition_points, _prohibition_polygons, _prohibited_cells, _fill_polygons);
+    _force_recompute = false; // false because we have addressed it
   }
   setCellCost(master_grid, _prohibited_cells, LETHAL_OBSTACLE, min_i, min_j, max_i, max_j);
 }

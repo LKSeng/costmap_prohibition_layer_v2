@@ -208,6 +208,7 @@ private:
   double _min_x, _min_y, _max_x, _max_y;                                        //!< cached map bounds
   double _current_origin_x, _current_origin_y, _current_map_resolution;         //!< go figure
   std::vector<PointInt> _prohibited_cells;                                         //!< go figure again
+  bool _force_recompute;
 };
 }
 #endif
