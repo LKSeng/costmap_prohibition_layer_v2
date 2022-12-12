@@ -176,7 +176,7 @@ void CostmapProhibitionLayer::updateProhibitionCells(costmap_2d::Costmap2D* cost
     std::vector<PointInt> polygon_cells; // passing in polygon_cells instead of prohibited_cells so prohibited zones don't fuse together
     updateProhibitedPolygon(costmap_grid, prohibition_polygons[i], polygon_cells, fill_polygons);
     // filter points that are not in
-    for (std::vector<PointInt>::Iterator it = polygon_cells.begin(), it != polygon_cells.end(), ++it)
+    for (std::vector<PointInt>::iterator it = polygon_cells.begin(); it != polygon_cells.end(); ++it)
     {
       int mx = it->x;
       int my = it->y;
@@ -196,7 +196,7 @@ void CostmapProhibitionLayer::updateProhibitionCells(costmap_2d::Costmap2D* cost
     updateProhibitedPoint(costmap_grid, prohibition_points[i], point_cells);
   }
   // filter points that are not in
-  for (std::vector<PointInt>::Iterator it = point_cells.begin(), it != point_cells.end(), ++it)
+  for (std::vector<PointInt>::iterator it = point_cells.begin(); it != point_cells.end(); ++it)
   {
     int mx = it->x;
     int my = it->y;

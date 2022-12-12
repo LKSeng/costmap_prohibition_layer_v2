@@ -136,7 +136,7 @@ private:
    * @param max_j             maximum bound on the vertical map index/coordinate
    * @param fill_polygon          if true, the cost for the interior of the polygon will be set as well
    */
-void CostmapProhibitionLayer::updateProhibitionCells(costmap_2d::Costmap2D* costmap_grid, const std::vector<geometry_msgs::Point>& prohibition_points,
+void updateProhibitionCells(costmap_2d::Costmap2D* costmap_grid, const std::vector<geometry_msgs::Point>& prohibition_points,
                           const std::vector<std::vector<geometry_msgs::Point>>& prohibition_polygons, std::vector<PointInt>& prohibited_cells,
                           int min_i, int min_j, int max_i, int max_j, const bool& fill_polygons);
 
