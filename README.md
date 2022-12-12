@@ -4,3 +4,5 @@ ROS-Package that implements a costmap layer to add prohibited areas to the costm
 Build status of the *kinetic-devel* branch:
 - Travis (Ubuntu Trusty): [![Build Status](https://travis-ci.org/rst-tu-dortmund/costmap_prohibition_layer.svg?branch=kinetic-devel)](https://travis-ci.org/rst-tu-dortmund/costmap_prohibition_layer)
 
+# Special Note:
+If using this branch, the plugin name is "costmap_prohibition_layer_v2::CostmapProhibitionLayer" instead of "costmap_prohibition_layer_namespace::CostmapProhibitionLayer".
