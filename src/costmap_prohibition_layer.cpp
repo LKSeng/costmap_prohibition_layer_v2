@@ -142,7 +142,9 @@ void CostmapProhibitionLayer::updateProhibitionCells(costmap_2d::Costmap2D* cost
   // set costs of polygons
   for (int i = 0; i < prohibition_polygons.size(); ++i)
   {
-    updateProhibitedPolygon(costmap_grid, prohibition_polygons[i], prohibited_cells, fill_polygons);
+    std::vector<PointInt> polygon_cells; // passing in polygon_cells instead of prohibited_cells so prohibited zones don't fuse together
+    updateProhibitedPolygon(costmap_grid, prohibition_polygons[i], polygon_cells, fill_polygons);
+    prohibited_cells.insert(prohibited_cells.end(), polygon_cells.begin(), polygon_cells.end()); // would usage of std::move be more efficient here?
   }
   
   // set cost of points
