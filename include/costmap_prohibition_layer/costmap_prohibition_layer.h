@@ -156,21 +156,6 @@ private:
   void setCellCost(costmap_2d::Costmap2D &master_grid, std::vector<PointInt>& prohibited_cells, unsigned char cost, int min_i, int min_j, int max_i, int max_j);
 
   /**
-   * Set cost in a Costmap2D for a polygon (polygon may be located outside bounds)
-   * 
-   * @param master_grid    reference to the Costmap2D object
-   * @param polygon        polygon defined by a vector of points (in world coordinates)
-   * @param cost           the cost value to be set (0,255)
-   * @param min_i          minimum bound on the horizontal map index/coordinate
-   * @param min_j          minimum bound on the vertical map index/coordinate
-   * @param max_i          maximum bound on the horizontal map index/coordinate
-   * @param max_j          maximum bound on the vertical map index/coordinate
-   * @param fill_polygon   if true, tue cost for the interior of the polygon will be set as well    
-   */
-  void setPolygonCost(costmap_2d::Costmap2D &master_grid, const std::vector<geometry_msgs::Point>& polygon,
-                      unsigned char cost, int min_i, int min_j, int max_i, int max_j, bool fill_polygon);
-  
-  /**
    * Convert polygon (in map coordinates) to a set of cells in the map
    * 
    * @remarks This method is mainly based on Costmap2D::convexFillCells() but accounts

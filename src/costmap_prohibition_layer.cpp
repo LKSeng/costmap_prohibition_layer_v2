@@ -237,37 +237,6 @@ void CostmapProhibitionLayer::setCellCost(costmap_2d::Costmap2D &master_grid, st
   }
 }
 
-void CostmapProhibitionLayer::setPolygonCost(costmap_2d::Costmap2D &master_grid, const std::vector<geometry_msgs::Point>& polygon, unsigned char cost,
-                                             int min_i, int min_j, int max_i, int max_j, bool fill_polygon)
-{
-    std::vector<PointInt> map_polygon;
-    for (unsigned int i = 0; i < polygon.size(); ++i)
-    {
-        PointInt loc;
-        master_grid.worldToMapNoBounds(polygon[i].x, polygon[i].y, loc.x, loc.y);
-        map_polygon.push_back(loc);
-    }
-
-    std::vector<PointInt> polygon_cells;
-
-    // get the cells that fill the polygon
-    rasterizePolygon(map_polygon, polygon_cells, fill_polygon);
-
-    // set the cost of those cells
-    for (unsigned int i = 0; i < polygon_cells.size(); ++i)
-    {
-        int mx = polygon_cells[i].x;
-        int my = polygon_cells[i].y;
-        // check if point is outside bounds
-        if (mx < min_i || mx >= max_i)
-            continue;
-        if (my < min_j || my >= max_j)
-            continue;
-        master_grid.setCost(mx, my, cost);
-    }
-}
-
-
 void CostmapProhibitionLayer::polygonOutlineCells(const std::vector<PointInt>& polygon, std::vector<PointInt>& polygon_cells)
   {
      for (unsigned int i = 0; i < polygon.size() - 1; ++i)
