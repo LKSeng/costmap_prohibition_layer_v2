@@ -112,7 +112,7 @@ private:
   void computeMapBounds();
 
   /**
-   * Updates prohibited cell (in world coordinates) for a polygon (polygon may be located outside bounds)
+   * Updates prohibited cell (in world coordinates) for a polygons and points (which may be located outside bounds)
    * 
    * @param costmap_grid          pointer to the Costmap2D object
    * @param prohibition_points    vector of point defined by geometry_msgs::Point (in world coordinates)
@@ -122,6 +122,23 @@ private:
    */
   void updateProhibitionCells(costmap_2d::Costmap2D* costmap_grid, const std::vector<geometry_msgs::Point>& prohibition_points,
                           const std::vector<std::vector<geometry_msgs::Point>>& prohibition_polygons, std::vector<PointInt>& prohibited_cells, const bool& fill_polygons);
+
+  /**
+   * Updates prohibited cell (in world coordinates) for a polygons and points (which are located within bounds)
+   * 
+   * @param costmap_grid          pointer to the Costmap2D object
+   * @param prohibition_points    vector of point defined by geometry_msgs::Point (in world coordinates)
+   * @param prohibition_polygons  vector of polygons defined by a vector of points (in world coordinates)
+   * @param prohibited_cells      prohibited cells defined by a vector of points (in world coordinates) to append polygon cells to
+   * @param min_i             minimum bound on the horizontal map index/coordinate
+   * @param min_j             minimum bound on the vertical map index/coordinate
+   * @param max_i             maximum bound on the horizontal map index/coordinate
+   * @param max_j             maximum bound on the vertical map index/coordinate
+   * @param fill_polygon          if true, the cost for the interior of the polygon will be set as well
+   */
+void CostmapProhibitionLayer::updateProhibitionCells(costmap_2d::Costmap2D* costmap_grid, const std::vector<geometry_msgs::Point>& prohibition_points,
+                          const std::vector<std::vector<geometry_msgs::Point>>& prohibition_polygons, std::vector<PointInt>& prohibited_cells,
+                          int min_i, int min_j, int max_i, int max_j, const bool& fill_polygons);
 
   /**
    * Updates prohibited cell (in world coordinates) for a point (point may be located outside bounds)
@@ -154,6 +171,15 @@ private:
    * @param max_j             maximum bound on the vertical map index/coordinate
    */
   void setCellCost(costmap_2d::Costmap2D &master_grid, std::vector<PointInt>& prohibited_cells, unsigned char cost, int min_i, int min_j, int max_i, int max_j);
+
+  /**
+   * Set cost in a Costmap2D as declared in prohibited_cells (prohibited_cell is located within bounds)
+   * 
+   * @param master_grid       reference to the Costmap2D object
+   * @param prohibited_cells  prohibited cells defined by a vector of points (in world coordinates) to mark as cost on costmap
+   * @param cost              the cost value to be set (0,255)
+   */
+  void setCellCost(costmap_2d::Costmap2D &master_grid, std::vector<PointInt>& prohibited_cells, unsigned char cost);
 
   /**
    * Convert polygon (in map coordinates) to a set of cells in the map
@@ -231,7 +257,7 @@ private:
   double _min_x, _min_y, _max_x, _max_y;                                        //!< cached map bounds
   double _current_origin_x, _current_origin_y, _current_map_resolution;         //!< store origin coordinates and map resolution used to compute values in _prohibited_cells
   std::vector<PointInt> _prohibited_cells;                                      //!< vector storing the world (integer) coordinates of prohibited cells
-  bool _force_recompute;                                                        //!< flag to set to force recomputation of _prohibited_cells in updateCosts
+  bool _force_recompute{true};                                                  //!< flag to set to force recomputation of _prohibited_cells in updateCosts
 };
 }
 #endif
