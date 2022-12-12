@@ -110,7 +110,13 @@ private:
    * The result is stored in class members _min_x, _min_y, _max_x and _max_y.
    */ 
   void computeMapBounds();
-  
+
+  void updateProhibitionCells(costmap_2d::Costmap2D* costmap_grid, const std::vector<geometry_msgs::Point>& prohibition_points,
+                          const std::vector<std::vector<geometry_msgs::Point>>& prohibition_polygons, std::vector<PointInt>& prohibited_cells, const bool& fill_polygons);
+  void updateProhibitedPoint(costmap_2d::Costmap2D* costmap_grid, const geometry_msgs::Point& prohibition_point, std::vector<PointInt>& point_cells);
+  void updateProhibitedPolygon(costmap_2d::Costmap2D* costmap_grid, const std::vector<geometry_msgs::Point>& prohibition_polygon, std::vector<PointInt>& polygon_cells, const bool& fill_polygons);
+  void setCellCost(costmap_2d::Costmap2D &master_grid, std::vector<PointInt>& prohibited_cells, unsigned char cost, int min_i, int min_j, int max_i, int max_j);
+
   /**
    * Set cost in a Costmap2D for a polygon (polygon may be located outside bounds)
    * 
@@ -200,6 +206,8 @@ private:
   std::vector<geometry_msgs::Point> _prohibition_points;                        //!< vector to save the lonely points in source coordinates
   std::vector<std::vector<geometry_msgs::Point>> _prohibition_polygons;         //!< vector to save the polygons (including lines) in source coordinates
   double _min_x, _min_y, _max_x, _max_y;                                        //!< cached map bounds
+  double _current_origin_x, _current_origin_y, _current_map_resolution;         //!< go figure
+  std::vector<PointInt> _prohibited_cells;                                         //!< go figure again
 };
 }
 #endif

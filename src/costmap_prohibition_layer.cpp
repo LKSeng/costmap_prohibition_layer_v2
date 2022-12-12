@@ -85,6 +85,9 @@ void CostmapProhibitionLayer::onInitialize()
   // compute map bounds for the current set of prohibition areas.
   computeMapBounds();
   
+  // init for first costmap
+  updateProhibitionCells(costmap, _prohibition_points, _prohibition_polygons, _prohibited_cells, _fill_polygons);
+
   ROS_INFO("CostmapProhibitionLayer initialized.");
 }
 
@@ -119,22 +122,33 @@ void CostmapProhibitionLayer::updateCosts(costmap_2d::Costmap2D &master_grid, in
     return;
 
   std::lock_guard<std::mutex> l(_data_mutex);
-  
-  // set costs of polygons
-  for (int i = 0; i < _prohibition_polygons.size(); ++i)
+
+  // check if origin AND resolution of master grid has changed. if it has, costly computation is required
+  if (master_grid.getOriginX() != _current_origin_x or master_grid.getOriginY() != _current_origin_y or master_grid.getResolution() != _current_map_resolution)
   {
-      setPolygonCost(master_grid, _prohibition_polygons[i], LETHAL_OBSTACLE, min_i, min_j, max_i, max_j, _fill_polygons);
+    updateProhibitionCells(&master_grid, _prohibition_points, _prohibition_polygons, _prohibited_cells, _fill_polygons);
   }
-      
-  // set cost of points
-  for (int i = 0; i < _prohibition_points.size(); ++i)
+  setCellCost(master_grid, _prohibited_cells, LETHAL_OBSTACLE, min_i, min_j, max_i, max_j);
+}
+
+void CostmapProhibitionLayer::updateProhibitionCells(costmap_2d::Costmap2D* costmap_grid, const std::vector<geometry_msgs::Point>& prohibition_points,
+                          const std::vector<std::vector<geometry_msgs::Point>>& prohibition_polygons, std::vector<PointInt>& prohibited_cells, const bool& fill_polygons)
+{
+  _current_origin_x = costmap_grid->getOriginX();
+  _current_origin_y = costmap_grid->getOriginY();
+  _current_map_resolution = costmap_grid->getResolution();
+
+  prohibited_cells.clear();
+  // set costs of polygons
+  for (int i = 0; i < prohibition_polygons.size(); ++i)
   {
-    unsigned int mx;
-    unsigned int my;
-    if (master_grid.worldToMap(_prohibition_points[i].x, _prohibition_points[i].y, mx, my))
-    {
-      master_grid.setCost(mx, my, LETHAL_OBSTACLE);
-    }
+    updateProhibitedPolygon(costmap_grid, prohibition_polygons[i], prohibited_cells, fill_polygons);
+  }
+  
+  // set cost of points
+  for (int i = 0; i < prohibition_points.size(); ++i)
+  {
+    updateProhibitedPoint(costmap_grid, prohibition_points[i], prohibited_cells);
   }
 }
 
@@ -171,6 +185,48 @@ void CostmapProhibitionLayer::computeMapBounds()
   }
 }
 
+void CostmapProhibitionLayer::updateProhibitedPoint(costmap_2d::Costmap2D* costmap_grid, const geometry_msgs::Point& prohibition_point, std::vector<PointInt>& point_cells)
+{
+  unsigned int mx;
+  unsigned int my;
+  if (costmap_grid->worldToMap(prohibition_point.x, prohibition_point.y, mx, my))
+  {
+    PointInt pt;
+    pt.x = mx; // # INVESTIGATE: mx is unsigned int
+    pt.y = my; // # INVESTIGATE: my is unsigned int
+    point_cells.push_back(pt); // use emplace_back, do it!
+  }
+}
+
+void CostmapProhibitionLayer::updateProhibitedPolygon(costmap_2d::Costmap2D* costmap_grid, const std::vector<geometry_msgs::Point>& prohibition_polygon, std::vector<PointInt>& polygon_cells, const bool& fill_polygons)
+{
+  std::vector<PointInt> map_polygon;
+  for (unsigned int i = 0; i < prohibition_polygon.size(); ++i)
+  {
+      PointInt loc;
+      costmap_grid->worldToMapNoBounds(prohibition_polygon[i].x, prohibition_polygon[i].y, loc.x, loc.y);
+      map_polygon.push_back(loc);
+  }
+
+  // get the cells that fill the polygon
+  rasterizePolygon(map_polygon, polygon_cells, fill_polygons);
+}
+
+void CostmapProhibitionLayer::setCellCost(costmap_2d::Costmap2D &master_grid, std::vector<PointInt>& prohibited_cells, unsigned char cost, int min_i, int min_j, int max_i, int max_j)
+{
+  // set the cost of those cells
+  for (unsigned int i = 0; i < prohibited_cells.size(); ++i)
+  {
+      int mx = prohibited_cells[i].x;
+      int my = prohibited_cells[i].y;
+      // check if point is outside bounds
+      if (mx < min_i || mx >= max_i)
+          continue;
+      if (my < min_j || my >= max_j)
+          continue;
+      master_grid.setCost(mx, my, cost);
+  }
+}
 
 void CostmapProhibitionLayer::setPolygonCost(costmap_2d::Costmap2D &master_grid, const std::vector<geometry_msgs::Point>& polygon, unsigned char cost,
                                              int min_i, int min_j, int max_i, int max_j, bool fill_polygon)
